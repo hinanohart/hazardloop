@@ -23,19 +23,50 @@ from hazardloop.core.weibull_aft import weibull_aft
 from hazardloop.types import EventModel, SurvivalRecord, SurvivalReport, WeibullAFTResult
 
 VALID_CIF_MODES = ("live", "synthetic")
+UNLABELED_CAUSE = "unlabeled"
+
+
+def can_claim_live_cif(records: Sequence[SurvivalRecord], event_model: EventModel) -> bool:
+    """True only if the data carries >= 2 distinct *real* typed causes (not the placeholder
+    ``unlabeled``). This is a necessary condition for a genuine multi-cause typed CIF; it is
+    *not sufficient* — synthetic data can also have many causes — so ``cif_mode='live'``
+    additionally requires the caller to vouch that the data is real (see ``fit_survival``).
+    """
+    observed = {
+        c
+        for r in records
+        if (c := event_model.cause_of(r.terminal_mode)) is not None and c != UNLABELED_CAUSE
+    }
+    return len(observed) >= 2
 
 
 def fit_survival(
     records: Sequence[SurvivalRecord],
     event_model: EventModel | None = None,
     *,
-    cif_mode: str = "live",
+    cif_mode: str | None = None,
     alpha: float = 0.05,
     fit_weibull: bool = True,
 ) -> SurvivalReport:
+    """Fit the full survival report.
+
+    ``cif_mode`` defaults to ``"synthetic"`` — the conservative, disclaimer-forcing label.
+    ``"live"`` (the typed competing-risk CIF is backed by *real* per-cause labels) is never
+    inferred automatically: it must be passed explicitly by a caller that vouches the data
+    is real, and it is rejected unless the data actually has >= 2 real typed causes. This is
+    what prevents a synthetic or single-cause source from masquerading as the typed moat.
+    """
+    model = event_model or EventModel.failure_as_event()
+    if cif_mode is None:
+        cif_mode = "synthetic"
     if cif_mode not in VALID_CIF_MODES:
         raise ValueError(f"cif_mode must be one of {VALID_CIF_MODES}, got {cif_mode!r}")
-    model = event_model or EventModel.failure_as_event()
+    if cif_mode == "live" and not can_claim_live_cif(records, model):
+        raise ValueError(
+            "cif_mode='live' requires >= 2 distinct real typed causes in the data; "
+            "this source cannot substantiate a live typed competing-risk CIF "
+            "(use the default 'synthetic')"
+        )
     table = build_risk_table(records, model)
 
     km = kaplan_meier_from_table(table, alpha)

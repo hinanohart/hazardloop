@@ -45,12 +45,6 @@ def _make_backend(name: str, limit: int, seed: int) -> TrajectoryBackend:
     raise typer.BadParameter(f"unknown backend {name!r}; choose 'mock' or 'swe-smith'")
 
 
-def _default_cif_mode(backend_name: str) -> str:
-    # mock = synthetic multi-cause CIF; swe-smith real data is binary (single 'unlabeled'
-    # cause), so its CIF is real but not the headline typed multi-cause demonstration.
-    return "synthetic" if backend_name == "mock" else "live"
-
-
 def _load(backend: TrajectoryBackend, limit: int) -> list[SurvivalRecord]:
     return list(backend.load(limit=limit))
 
@@ -70,13 +64,15 @@ def fit(
     backend: BackendOpt = "mock",
     limit: LimitOpt = 500,
     seed: SeedOpt = 0,
-    cif_mode: Annotated[str, typer.Option(help="live | synthetic (default by backend)")] = "",
+    cif_mode: Annotated[
+        str, typer.Option(help="live | synthetic (default: derived from the data)")
+    ] = "",
     json_out: JsonOpt = False,
 ) -> None:
     """Fit KM / Nelson-Aalen / Aalen-Johansen CIF / Weibull from a backend."""
     records = _load(_make_backend(backend, limit, seed), limit)
-    mode = cif_mode or _default_cif_mode(backend)
-    report = fit_survival(records, cif_mode=mode)
+    report = fit_survival(records, cif_mode=(cif_mode or None))
+    mode = report.cif_mode
     observed = has_observed_events(report)
     km_final = float(report.km.survival[-1]) if report.km.survival.size else 1.0
     shape: float | None = report.weibull.shape if report.weibull else None

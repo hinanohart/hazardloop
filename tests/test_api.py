@@ -45,3 +45,38 @@ def test_fit_survival_rejects_bad_cif_mode() -> None:
     recs = synthetic_competing_risks(20, seed=1)
     with pytest.raises(ValueError, match="cif_mode"):
         fit_survival(recs, cif_mode="real-ish")
+
+
+def test_cif_mode_defaults_to_synthetic() -> None:
+    # the conservative, disclaimer-forcing default — "live" is never inferred automatically
+    recs = synthetic_competing_risks(50, seed=2)
+    assert fit_survival(recs).cif_mode == "synthetic"
+
+
+def test_live_cif_requires_real_typed_causes() -> None:
+    from hazardloop.estimate import can_claim_live_cif
+
+    # binary-only (real-narrow) data: a single 'unlabeled' cause cannot back a live CIF
+    binary = [
+        SurvivalRecord(duration=2.0, terminal_mode=TerminationMode.UNLABELED),
+        SurvivalRecord(duration=3.0, terminal_mode=TerminationMode.SOLVED),
+    ]
+    assert can_claim_live_cif(binary, EventModel.failure_as_event()) is False
+    with pytest.raises(ValueError, match="live"):
+        fit_survival(binary, cif_mode="live")
+    # multi-cause data satisfies the necessary condition
+    multi = synthetic_competing_risks(200, seed=3)
+    assert can_claim_live_cif(multi, EventModel.failure_as_event()) is True
+
+
+def test_deferred_backends_are_honest_stubs() -> None:
+    import pytest as _pytest
+
+    from hazardloop.adapters.stubs import OpenEnvBackend, VerifiersBackend
+
+    for be in (VerifiersBackend(), OpenEnvBackend()):
+        status = be.doctor()
+        assert status.available is False
+        assert status.is_synthetic is False
+        with _pytest.raises(NotImplementedError):
+            be.load()

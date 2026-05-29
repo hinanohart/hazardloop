@@ -268,12 +268,12 @@ class ReplayEvaluator:
             n_test=len(test),
             test_metrics=metrics,
             premature_abort_rate_ci=cluster_bootstrap_ci(
-                test, _premature, n_boot=self._n_boot, seed=self._seed, method="percentile"
+                test, _premature, n_boot=self._n_boot, seed=self._seed, method="bca"
             ),
             recall_ci=cluster_bootstrap_ci(
-                test, _recall, n_boot=self._n_boot, seed=self._seed, method="percentile"
+                test, _recall, n_boot=self._n_boot, seed=self._seed, method="bca"
             ),
             saved_compute_fraction_ci=cluster_bootstrap_ci(
-                test, _saved, n_boot=self._n_boot, seed=self._seed, method="percentile"
+                test, _saved, n_boot=self._n_boot, seed=self._seed, method="bca"
             ),
         )
