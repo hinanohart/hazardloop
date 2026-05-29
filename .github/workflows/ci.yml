@@ -1,0 +1,104 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
+jobs:
+  test:
+    name: test (${{ matrix.os }}, py${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: false
+      - name: install
+        run: uv pip install --system -e ".[test]"
+      - name: pytest (no network)
+        run: python -m pytest -q -m "not network"
+
+  lint:
+    name: lint (ruff + mypy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: false
+      - run: uv pip install --system -e ".[test,dev]"
+      - name: ruff
+        run: ruff check src tests scripts
+      - name: mypy (strict)
+        run: mypy src/hazardloop
+
+  gpl:
+    name: gpl-import-guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: no GPL survival dependency
+        run: python scripts/check_no_gpl.py
+
+  honest:
+    name: honest-marketing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: honest-marketing (strict)
+        run: python scripts/check_honest_marketing.py --no-placeholders --require-disclaimers
+
+  build:
+    name: build (sdist + wheel)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: false
+      - run: uv build
+      - run: ls -l dist
+
+  all-green:
+    name: all-green
+    runs-on: ubuntu-latest
+    needs: [test, lint, gpl, honest, build]
+    if: always()
+    steps:
+      - name: verify all required jobs succeeded
+        run: |
+          echo "test=${{ needs.test.result }} lint=${{ needs.lint.result }} gpl=${{ needs.gpl.result }} honest=${{ needs.honest.result }} build=${{ needs.build.result }}"
+          [ "${{ needs.test.result }}" = "success" ] \
+            && [ "${{ needs.lint.result }}" = "success" ] \
+            && [ "${{ needs.gpl.result }}" = "success" ] \
+            && [ "${{ needs.honest.result }}" = "success" ] \
+            && [ "${{ needs.build.result }}" = "success" ]
