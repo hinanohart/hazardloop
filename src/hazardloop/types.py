@@ -87,6 +87,7 @@ class SurvivalRecord:
     duration: float
     terminal_mode: TerminationMode
     cluster: str | None = None
+    run_id: str | None = None
     covariates: Mapping[str, float] = field(default_factory=dict)
 
     def __post_init__(self) -> None:

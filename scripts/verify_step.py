@@ -183,7 +183,7 @@ def check_S3() -> list[CheckResult]:
         _importable("hazardloop.adapters.normalize"),
         _importable("hazardloop.adapters.mock"),
         _importable("hazardloop.adapters.swebench"),
-        _pytest(["tests/test_adapters.py"]),
+        _pytest(["tests/test_adapters.py"], extra=["-m", "not network"]),
     ]
 
 
