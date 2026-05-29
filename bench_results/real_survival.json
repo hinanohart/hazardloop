@@ -1,0 +1,40 @@
+{
+  "dataset": {
+    "n": 400,
+    "mode": "live",
+    "source": "swe-smith-trajectories:tool",
+    "seed": 0,
+    "version": "0.1.0a1",
+    "git_sha": "32e2cfb",
+    "python": "3.11.15",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "date": "2026-05-29"
+  },
+  "n_solved": 301,
+  "n_unresolved": 99,
+  "cif_mode": "synthetic",
+  "km_final_survival": 0.04921715046742749,
+  "km_n_event_times": 48,
+  "median_survival_step": 47.0,
+  "logistic_vs_km": {
+    "mean_abs_divergence": 0.08969553998427508,
+    "max_abs_divergence": 0.15471696631863063,
+    "note": "two estimators on one dataset can diverge; NOT a claim METR is wrong"
+  },
+  "replay": {
+    "threshold": 0.1,
+    "threshold_selected_on": "train",
+    "evaluated_on": "test",
+    "n_clusters": 108,
+    "n_train": 200,
+    "n_test": 200,
+    "premature_abort_rate": 0.4342105263157895,
+    "premature_abort_rate_ci": [
+      0.34699965276837597,
+      0.5095700910396163
+    ],
+    "recall": 0.75,
+    "saved_compute_fraction_all": 0.313144571535721,
+    "lead_time_median": 17.0
+  }
+}

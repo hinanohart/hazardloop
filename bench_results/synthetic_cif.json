@@ -1,0 +1,27 @@
+{
+  "dataset": {
+    "n": 1500,
+    "mode": "synthetic",
+    "source": "synthetic_competing_risks",
+    "seed": 0,
+    "version": "0.1.0a1",
+    "git_sha": "32e2cfb",
+    "python": "3.11.15",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "date": "2026-05-29"
+  },
+  "cif_mode": "synthetic",
+  "km_final_survival": 0.0,
+  "n_event_times": 33,
+  "weibull_shape": 1.2247697568336022,
+  "weibull_scale": 9.092885290289281,
+  "cif_final_by_cause": {
+    "budget_exhausted": 0.14240886637613753,
+    "infinite_loop": 0.16241159598610097,
+    "tool_error": 0.25959983080354676,
+    "unlabeled": 0.0,
+    "wrong_patch": 0.4355797068342148
+  },
+  "cif_additivity_max_error": 1.1102230246251565e-16,
+  "note": "typed multi-cause Aalen-Johansen CIF validated on synthetic data only"
+}
