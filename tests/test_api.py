@@ -11,7 +11,7 @@ from hazardloop.types import SurvivalRecord
 
 
 def test_version_and_public_symbols() -> None:
-    assert hazardloop.__version__ == "0.1.0a1"
+    assert hazardloop.__version__ == "0.1.0a2"
     for name in hazardloop.__all__:
         assert hasattr(hazardloop, name), name
 

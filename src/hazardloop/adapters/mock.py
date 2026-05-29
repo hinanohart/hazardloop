@@ -33,7 +33,7 @@ def synthetic_competing_risks(
     cause_rates: Mapping[str, float] | None = None,
     success_rate: float = 0.04,
     max_steps: int = 60,
-    n_clusters: int = 4,
+    n_clusters: int = 20,
 ) -> list[SurvivalRecord]:
     """Generate ``n`` synthetic runs with known competing-risk structure (deterministic)."""
     if n < 1:

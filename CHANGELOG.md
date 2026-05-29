@@ -3,7 +3,19 @@
 All notable changes to hazardloop are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/) (with PEP 440 pre-release tags).
 
-## [0.1.0a1] — unreleased (pre-alpha)
+## [0.1.0a2] — pre-alpha (post-publish audit patch)
+
+### Fixed
+- README install instructions now use a from-source command (the package is not yet on
+  PyPI); the headline `pip install hazardloop` was unreachable.
+- README reproducibility note explains that `scripts/run_bench.py` exits non-zero due to a
+  `datasets`/pyarrow teardown segfault (files are written first); verify by file existence.
+- `synthetic_competing_risks` default `n_clusters` raised 4 → 20 so `replay --backend mock`
+  produces a non-degenerate cluster-bootstrap CI (headline real-data numbers unchanged).
+- `weibull_aft` now raises on fewer than two distinct event times instead of silently
+  returning a diverged shape (β→∞).
+
+## [0.1.0a1] — pre-alpha (initial GitHub pre-release)
 
 ### Added
 - Survival core (numpy, from scratch): Kaplan-Meier + Greenwood variance + complementary

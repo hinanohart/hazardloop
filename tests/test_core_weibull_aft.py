@@ -68,3 +68,12 @@ def test_degenerate_guards() -> None:
         )
     with pytest.raises(ValueError, match="all censored"):
         weibull_aft([SurvivalRecord(duration=2.0, terminal_mode=TerminationMode.SOLVED)], MODE_A)
+    # all events at one duration -> shape diverges -> must raise, not return ~1e15 silently
+    with pytest.raises(ValueError, match="distinct event times"):
+        weibull_aft(
+            [
+                SurvivalRecord(duration=5.0, terminal_mode=TerminationMode.WRONG_PATCH)
+                for _ in range(8)
+            ],
+            MODE_A,
+        )

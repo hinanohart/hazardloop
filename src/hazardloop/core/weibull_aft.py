@@ -51,6 +51,13 @@ def weibull_aft(records: Sequence[SurvivalRecord], event_model: EventModel) -> W
     n_events = int(event.sum())
     if n_events == 0:
         raise ValueError("weibull_aft requires at least one observed event (all censored)")
+    # With zero spread in event times the MLE shape diverges (β→∞); refuse rather than
+    # return a meaningless ~1e15 silently.
+    if np.unique(durations[event]).size < 2:
+        raise ValueError(
+            "weibull_aft requires >= 2 distinct event times; the shape parameter is "
+            "undefined (diverges) when all events share one duration"
+        )
 
     # Moment-ish initialisation: β≈1, λ≈mean event time.
     lam0 = float(np.mean(durations[event])) if n_events > 0 else float(np.mean(durations))
