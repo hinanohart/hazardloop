@@ -67,6 +67,8 @@ class StepRecord:
     covariates: Mapping[str, float] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
+        if self.event_type is not None and not isinstance(self.event_type, TerminationMode):
+            object.__setattr__(self, "event_type", TerminationMode(self.event_type))
         if self.step < 0:
             raise ValueError(f"step must be >= 0, got {self.step}")
         if self.wall_time is not None and self.wall_time < 0:
@@ -88,6 +90,9 @@ class SurvivalRecord:
     covariates: Mapping[str, float] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
+        if not isinstance(self.terminal_mode, TerminationMode):
+            # accept a plain str / numpy str; reject unknown values (fail fast).
+            object.__setattr__(self, "terminal_mode", TerminationMode(self.terminal_mode))
         if not np.isfinite(self.duration):
             raise ValueError(f"duration must be finite, got {self.duration}")
         if self.duration < 0:
