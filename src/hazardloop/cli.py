@@ -166,7 +166,7 @@ def control(
 
 @app.command()
 def compare() -> None:
-    """[v0.2 stub] Anytime-valid sequential comparison — not implemented in 0.1.0a1."""
+    """[v0.2 stub] Anytime-valid sequential comparison — not implemented in this release."""
     typer.echo(
         "compare (anytime-valid sequential comparison) is deferred to v0.2.\n"
         "It is intentionally not implemented here; the binary-correctness stopping problem\n"

@@ -3,6 +3,24 @@
 All notable changes to hazardloop are documented here.
 This project adheres to [Semantic Versioning](https://semver.org/) (with PEP 440 pre-release tags).
 
+## [0.1.0a3] — pre-alpha (post-/compact consistency audit)
+
+### Fixed
+- Stale version strings left behind by the previous release bump: the README status badge
+  and the `compare` CLI help / deferred-backend docstrings still read `0.1.0a1`. Source and
+  README now carry no hardcoded release number except the canonical `__version__` (prose
+  refers to "this release").
+- `fit_logistic_success` now guards a (near-)constant duration vector: a tiny but non-zero
+  standard deviation no longer blows up the centred/scaled design.
+- `decision_curve` clamps the implied failure probability strictly below 1, so a very large
+  cumulative-hazard threshold no longer drives every net benefit to `-inf` (identity over
+  the usual operating range).
+
+### Added
+- `check_honest_marketing.py` now enforces version consistency: every PEP 440 pre-release
+  literal in `src/hazardloop/**/*.py` and `README.md` must equal `__version__` (paired
+  positive/negative tests), so a stale leftover version can no longer ship silently.
+
 ## [0.1.0a2] — pre-alpha (post-publish audit patch)
 
 ### Fixed

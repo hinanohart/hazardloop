@@ -49,8 +49,11 @@ def fit_logistic_success(durations: np.ndarray, success: np.ndarray) -> tuple[fl
     y = np.asarray(success, dtype=np.float64)
     if x.size == 0:
         raise ValueError("fit_logistic_success requires at least one observation")
-    # centre/scale x for conditioning, then map coefficients back
-    mu, sd = float(np.mean(x)), float(np.std(x)) or 1.0
+    # centre/scale x for conditioning, then map coefficients back. Guard a (near-)constant
+    # x: a tiny but non-zero std would otherwise blow up xs = (x - mu) / sd.
+    mu = float(np.mean(x))
+    _sd = float(np.std(x))
+    sd = _sd if _sd > 1e-12 else 1.0
     xs = (x - mu) / sd
     res = minimize(_neg_loglik, np.array([0.0, 0.0]), args=(xs, y), method="BFGS")
     a_s, b_s = res.x

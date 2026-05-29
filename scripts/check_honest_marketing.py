@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -70,6 +71,12 @@ REQUIRED_DISCLAIMERS: tuple[str, ...] = (
 SYNTHETIC_CIF_DISCLAIMER: str = (
     "typed competing-risk CIF in this release is synthetic-validation-only"
 )
+
+# Drift guard: a PEP 440 pre-release version literal (e.g. 0.1.0a3). Every such literal in
+# the source tree and README must equal the canonical __version__ — otherwise a stale value
+# (the kind a context compaction / mid-release edit leaves behind) silently ships in user-
+# facing docstrings, CLI help, or the README status badge. CHANGELOG keeps historical tags.
+VERSION_LITERAL_RE = re.compile(r"\b\d+\.\d+\.\d+(?:a|b|rc)\d+\b")
 
 
 @dataclass
@@ -144,6 +151,52 @@ def check_synthetic_disclaimer(docs: dict[str, str], bench_dir: Path) -> Report:
     return rep
 
 
+def _canonical_version(root: Path) -> str | None:
+    """The single source of truth: ``__version__`` in ``src/hazardloop/__init__.py``."""
+    init = root / "src" / "hazardloop" / "__init__.py"
+    if not init.is_file():
+        return None
+    m = re.search(r'__version__\s*=\s*["\']([^"\']+)["\']', init.read_text())
+    return m.group(1) if m else None
+
+
+def check_version_consistency(root: Path) -> Report:
+    """No source/README version literal may disagree with the canonical ``__version__``.
+
+    Scans ``src/hazardloop/**/*.py`` and ``README.md`` for PEP 440 pre-release version
+    literals; every one must equal ``__version__`` (the canonical assignment line is
+    exempt). Catches stale leftovers in docstrings, CLI help, and the README status badge —
+    the kind of drift a context compaction or partial bump leaves behind. CHANGELOG and
+    other docs are not scanned (they legitimately reference historical tags).
+    """
+    rep = Report()
+    version = _canonical_version(root)
+    if version is None:
+        return rep
+    targets: list[Path] = []
+    src = root / "src" / "hazardloop"
+    if src.is_dir():
+        targets.extend(sorted(src.rglob("*.py")))
+    readme = root / "README.md"
+    if readme.is_file():
+        targets.append(readme)
+    for path in targets:
+        try:
+            text = path.read_text()
+        except OSError:
+            continue
+        for lineno, line in enumerate(text.splitlines(), start=1):
+            if "__version__" in line and "=" in line:
+                continue  # the canonical definition itself
+            for literal in VERSION_LITERAL_RE.findall(line):
+                if literal != version:
+                    rep.fail(
+                        f"stale version literal {literal!r} (canonical __version__ is "
+                        f"{version!r}) in {path.relative_to(root)}:{lineno}"
+                    )
+    return rep
+
+
 def load_docs(root: Path) -> dict[str, str]:
     docs: dict[str, str] = {}
     readme = root / "README.md"
@@ -183,6 +236,7 @@ def main(argv: list[str] | None = None) -> int:
         require_disclaimers=args.require_disclaimers,
     )
     rep.violations.extend(check_synthetic_disclaimer(docs, root / "bench_results").violations)
+    rep.violations.extend(check_version_consistency(root).violations)
 
     if rep.ok:
         print(f"honest-marketing: OK ({len(docs)} docs scanned)")

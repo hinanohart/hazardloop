@@ -1,8 +1,8 @@
 """Placeholder backends for live RL harnesses (``verifiers``, ``OpenEnv``).
 
-These are declared but **not implemented** in this release: hazardloop 0.1.0a1 reads only
-saved trajectory logs and never runs an agent live (the live middleware that would consume
-these is deferred to v0.2). The classes exist so the backend surface is discoverable and so
+These are declared but **not implemented** in this release: hazardloop reads only saved
+trajectory logs and never runs an agent live (the live middleware that would consume these
+is deferred to v0.2). The classes exist so the backend surface is discoverable and so
 callers get an explicit, honest ``NotImplementedError`` rather than a missing attribute.
 """
 
@@ -14,8 +14,8 @@ from hazardloop.adapters.base import BackendStatus
 from hazardloop.types import SurvivalRecord
 
 _DEFERRED = (
-    "live RL-harness backends are deferred to v0.2; 0.1.0a1 consumes saved trajectory logs "
-    "only (use the mock or swe-smith backends)."
+    "live RL-harness backends are deferred to v0.2; this release consumes saved trajectory "
+    "logs only (use the mock or swe-smith backends)."
 )
 
 

@@ -8,6 +8,9 @@
 .hf_token
 
 # Python
+# uv resolves from pyproject (CI uses `uv pip install -e`, not `uv sync`); the lockfile is
+# environment-generated and intentionally not tracked.
+uv.lock
 __pycache__/
 *.py[cod]
 *.egg-info/

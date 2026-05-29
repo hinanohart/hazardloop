@@ -118,3 +118,37 @@ def test_main_rc_passes_on_clean_tree(tmp_path: Path) -> None:
     root = _make_tree(tmp_path, readme, cif_mode="synthetic")
     rc = chm.main(["--root", str(root), "--no-placeholders", "--require-disclaimers"])
     assert rc == 0
+
+
+# --- version drift guard: no stale version literal survives a bump -----------------------
+def _version_tree(tmp_path: Path, version: str, source_body: str) -> Path:
+    pkg = tmp_path / "src" / "hazardloop"
+    pkg.mkdir(parents=True)
+    (pkg / "__init__.py").write_text(f'__version__ = "{version}"\n')
+    (pkg / "cli.py").write_text(source_body)
+    return tmp_path
+
+
+def test_version_consistency_passes_when_aligned(tmp_path: Path) -> None:
+    root = _version_tree(tmp_path, "0.1.0a3", '"""only the current version 0.1.0a3 here."""\n')
+    rep = chm.check_version_consistency(root)
+    assert rep.ok, rep.violations
+
+
+def test_version_consistency_fires_on_stale_literal(tmp_path: Path) -> None:
+    root = _version_tree(tmp_path, "0.1.0a3", '"""stale: not implemented in 0.1.0a1."""\n')
+    rep = chm.check_version_consistency(root)
+    assert not rep.ok
+    assert any("0.1.0a1" in v for v in rep.violations)
+
+
+def test_version_consistency_exempts_canonical_definition(tmp_path: Path) -> None:
+    # the __version__ assignment line is never itself flagged, and a tree with no other
+    # version literal is clean
+    root = _version_tree(tmp_path, "0.1.0a3", "X = 1  # no version literal\n")
+    assert chm.check_version_consistency(root).ok
+
+
+def test_version_consistency_noop_without_init(tmp_path: Path) -> None:
+    # no __init__.py -> nothing to anchor against -> no false positives
+    assert chm.check_version_consistency(tmp_path).ok

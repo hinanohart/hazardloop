@@ -11,7 +11,7 @@ Kaplan-Meier, Nelson-Aalen, the **Aalen-Johansen competing-risk cumulative incid
 function**, and Weibull AFT to agent trajectories — implemented from scratch on numpy,
 Apache-2.0 clean, CPU-only, no GPU.
 
-> **Status: 0.1.0a1 (pre-alpha).** hazardloop is an *estimator plus a fail-closed policy
+> **Status: 0.1.0a3 (pre-alpha).** hazardloop is an *estimator plus a fail-closed policy
 > interface*; it is **not a trained controller**. Any benefit to a live agent is
 > **UNVERIFIED** in this release — hazardloop never runs, retrains, or re-executes agents.
 > See [`docs/CLAIMS.md`](docs/CLAIMS.md) for the exact CLAIM / NON-CLAIM boundary.

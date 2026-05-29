@@ -199,9 +199,12 @@ def decision_curve(
     out: list[DecisionCurvePoint] = []
     for tau in thresholds:
         m = evaluate_policy(records, na, tau, event_model)
-        p = 1.0 - math.exp(-tau)
-        w = p / (1.0 - p) if p < 1.0 else math.inf
-        nb = (m.true_pos - w * m.false_pos) / n if math.isfinite(w) else -math.inf
+        # Clamp p strictly below 1 so the cost-ratio weight stays finite for very large tau
+        # (p -> 1 saturates float exp and would make every net benefit -inf, polluting
+        # threshold selection). For the usual operating range this is an identity.
+        p = min(1.0 - math.exp(-tau), 1.0 - 1e-12)
+        w = p / (1.0 - p)
+        nb = (m.true_pos - w * m.false_pos) / n
         out.append(DecisionCurvePoint(threshold=tau, threshold_probability=p, net_benefit=nb))
     return out
 
