@@ -91,7 +91,11 @@ def real_bench(limit: int = 400, seed: int = 0) -> dict[str, object]:
     # so the cluster bootstrap CI is informative. This is honest: difficulty correlates
     # within a repo. cluster = run_id up to the first '.'
     recs = [dataclasses.replace(r, cluster=(r.run_id or "unknown").split(".")[0]) for r in raw]
+    from hazardloop.replay import train_test_split
+
     n_clusters = len({r.cluster for r in recs})
+    _train, _test = train_test_split(recs, test_frac=0.5, seed=seed)
+    n_test_clusters = len({r.cluster for r in _test})
     n = len(recs)
     n_solved = sum(1 for r in recs if r.terminal_mode.value == "solved")
     report = fit_survival(recs, MODE_A, cif_mode="synthetic")  # binary -> no real typed CIF
@@ -117,6 +121,7 @@ def real_bench(limit: int = 400, seed: int = 0) -> dict[str, object]:
             "threshold_selected_on": replay.threshold_selected_on,
             "evaluated_on": replay.evaluated_on,
             "n_clusters": n_clusters,
+            "n_test_clusters": n_test_clusters,
             "n_train": replay.n_train,
             "n_test": replay.n_test,
             "premature_abort_rate": m.premature_abort_rate,

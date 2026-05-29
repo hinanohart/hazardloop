@@ -83,9 +83,9 @@ numbers). Reproduce with `python scripts/run_bench.py`.
   estimators on one dataset; it is **not** a statement that the METR methodology is
   incorrect.
 - **Offline-replay** (abort threshold selected on a train split, evaluated on a disjoint
-  test split of 200 runs; cluster bootstrap over 108 repositories): recall ≈ **0.75**,
-  premature-abort rate ≈ **0.43** (95% CI ≈ [0.35, 0.51]), saved-compute fraction ≈
-  **0.31**, median lead-time ≈ **17 steps**.
+  test split of 200 runs; cluster bootstrap over the 58 held-out test repositories, of 108
+  total): recall ≈ **0.75**, premature-abort rate ≈ **0.43** (95% CI ≈ [0.35, 0.51]),
+  saved-compute fraction ≈ **0.31**, median lead-time ≈ **17 steps**.
 
 **Synthetic competing risks** (`bench_results/synthetic_cif.json`) — typed multi-cause
 Aalen-Johansen CIF on the deterministic generator (n=1500): final CIF by cause ≈

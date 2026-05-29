@@ -5,7 +5,7 @@
     "source": "swe-smith-trajectories:tool",
     "seed": 0,
     "version": "0.1.0a1",
-    "git_sha": "32e2cfb",
+    "git_sha": "d6b9c6c",
     "python": "3.11.15",
     "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
     "date": "2026-05-29"
@@ -26,6 +26,7 @@
     "threshold_selected_on": "train",
     "evaluated_on": "test",
     "n_clusters": 108,
+    "n_test_clusters": 58,
     "n_train": 200,
     "n_test": 200,
     "premature_abort_rate": 0.4342105263157895,
