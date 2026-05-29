@@ -1,0 +1,42 @@
+hazardloop
+Copyright 2026 hinanohart
+
+This product includes software developed by hinanohart.
+Licensed under the Apache License, Version 2.0.
+
+================================================================================
+Runtime dependency license matrix
+================================================================================
+  numpy            BSD-3-Clause      core arrays / linear algebra
+  scipy            BSD-3-Clause      Weibull AFT MLE optimisation only
+  typer            MIT               command-line interface
+
+Optional (test extra) dependency license matrix
+  pytest           MIT               test runner
+  hypothesis       MPL-2.0           property-based testing
+  lifelines        MIT               cross-check ONLY of KM / Nelson-Aalen / Aalen-Johansen numerics
+
+Optional (data extra) dependency license matrix
+  datasets         Apache-2.0        SWE-smith-trajectories loader (S3/S6 real adapter)
+  huggingface-hub  Apache-2.0        Hugging Face Hub access
+
+================================================================================
+EXCLUDED dependency (license-incompatible, enforced by CI)
+================================================================================
+  scikit-survival  GPL-3.0           NOT a dependency, NOT an extra, NOT imported.
+                                     CI runs a hard grep (scripts/check_no_gpl.py)
+                                     that fails the build if `sksurv` / `scikit-survival`
+                                     ever appears in source or dependency metadata.
+                                     hazardloop re-implements KM / Nelson-Aalen /
+                                     Aalen-Johansen CIF / Weibull-AFT / cluster-bootstrap
+                                     from scratch on numpy to stay Apache-2.0 clean.
+
+================================================================================
+Data sources
+================================================================================
+  SWE-bench/SWE-smith-trajectories   MIT      Hugging Face dataset. Used read-only for
+                                              real-trajectory survival estimation (S6).
+                                              Raw agent logs are NEVER bundled into this
+                                              repository (see .gitignore). Only derived,
+                                              aggregate survival statistics are committed
+                                              under bench_results/.

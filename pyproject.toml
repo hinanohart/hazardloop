@@ -1,0 +1,96 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hazardloop"
+version = "0.1.0a1"
+description = "Censoring-aware competing-risk survival analysis for long-horizon LLM-agent trajectories (Kaplan-Meier / Nelson-Aalen / Aalen-Johansen CIF / Weibull AFT) with offline-replay decision-quality evaluation. CPU-only, no GPU."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [{ name = "hinanohart" }]
+keywords = [
+  "survival-analysis",
+  "competing-risks",
+  "aalen-johansen",
+  "kaplan-meier",
+  "llm-agent",
+  "time-to-event",
+  "offline-replay",
+]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Mathematics",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  "numpy>=1.24",
+  "scipy>=1.10",
+  "typer>=0.12",
+]
+
+[project.optional-dependencies]
+# lifelines (MIT) is used ONLY in the test suite to cross-check KM/NA/AJ numerics.
+# The GPL-licensed survival package (named in NOTICE) is structurally excluded from
+# runtime deps and extras; CI runs scripts/check_no_gpl.py to enforce its absence.
+test = [
+  "pytest>=7.4",
+  "hypothesis>=6.90",
+  "lifelines>=0.27",
+]
+dev = [
+  "ruff>=0.5",
+  "mypy>=1.8",
+]
+# HF dataset access for the real-trajectory adapter (S3/S6). Kept optional so the
+# core stays import-light and CI core jobs run without network.
+data = [
+  "datasets>=2.18",
+  "huggingface-hub>=0.23",
+]
+
+[project.urls]
+Homepage = "https://github.com/hinanohart/hazardloop"
+Repository = "https://github.com/hinanohart/hazardloop"
+
+[project.scripts]
+hazardloop = "hazardloop.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hazardloop"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/hazardloop", "tests", "scripts", "docs", "LICENSE", "NOTICE", "README.md", "CHANGELOG.md"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["src/hazardloop"]
+warn_unused_ignores = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+
+[[tool.mypy.overrides]]
+module = ["scipy.*", "datasets.*", "huggingface_hub.*", "lifelines.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+  "network: tests that require network access (skipped in core CI)",
+]

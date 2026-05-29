@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "product": "hazardloop",
+  "repo_slug": "hinanohart/hazardloop",
+  "protocol_version": "1.0",
+  "current_step": "S1",
+  "completed_steps": ["S0", "S0_5"],
+  "step_attempts": 0,
+  "session_lock": "b7cd08b9-continuation-2026-05-29",
+  "decisions": {
+    "public_name": "hazardloop",
+    "name_fallbacks": ["trajsurv", "survwatch", "horizonkm"],
+    "license": "Apache-2.0",
+    "core_libs": ["numpy", "scipy(MLE only)", "自前 KM/NA/AJ-CIF/WeibullAFT/cluster-bootstrap"],
+    "banned_deps": ["scikit-survival(GPL) import禁止 CI強制"],
+    "test_extra": ["lifelines(MIT) KM/NA/AJ数値一致のみ"],
+    "survival": {
+      "km": "自前+Greenwood+cloglog CI",
+      "na": "Nelson-Aalen",
+      "cif": "Aalen-Johansen competing risks(看板moat)",
+      "aft": "Weibull MLE 形状β",
+      "ci": "cluster bootstrap 既定",
+      "censoring": "timeout/予算→event_observed=0; mode-A success=censoring",
+      "competing_risks": "失敗様式→cause index",
+      "anytime_valid": "v0.2(E-valuator 混雑、再発明せず)"
+    },
+    "controller": {
+      "decisions": ["continue", "checkpoint", "fork", "abort", "abstain"],
+      "policy": "明示ルール(学習なし)",
+      "thresholds": "呼出側config"
+    },
+    "replay": {
+      "metrics": ["lead-time", "premature-abort-rate", "saved-compute", "cause別PR", "decision-curve"],
+      "fork_rescue_rate": "NON-CLAIM(計算しない)"
+    },
+    "adapters_v010": ["swebench/swe-smith-trajectories"],
+    "adapters_stub": ["verifiers", "openenv"],
+    "ci_layers": ["core-unit CPU required", "replay-unit required", "gpl-import-grep required"],
+    "version_tag": "v0.1.0a1",
+    "git_transport": "https-via-gh",
+    "claim_guard": "『censoring を捨てた静的logistic horizon と KM/CIF が乖離しうる』限定。METR断定禁止(R5)。replay/anytime-valid は prior-art(2509.02360/2512.03109)引用し非看板",
+    "v02_backlog": "live middleware実走+anytime-valid(E-valuator参照)+calibration深化+scorewright連携+Cox PH+real-log typed CIF"
+  },
+  "kill_criteria_results": {
+    "org_dup_check": {"checked": true, "repo_count": 127, "collisions": [], "verdict": "no-collision (survival/competing-risks/Nelson-Aalen 系 org 不在; passwedge/conformlock/costblame/koopgauge と軸直交)", "evidence": "gh repo list hinanohart --limit 300 -> 127 repos, hazardloop absent"},
+    "GATE1_data_availability": {
+      "checked": true,
+      "has_step_or_time": "step: derivable (messages turn count, proxy); wall_time/token_cost: ABSENT",
+      "has_censoring_flag": "explicit timeout/budget flag ABSENT; mode-A success=censoring derivable from `resolved` bool",
+      "has_typed_failure_mode": "ABSENT (only `resolved` binary); typed CIF needs labels not present",
+      "redistributable": "YES (MIT license)",
+      "verdict": "[B] real-narrow",
+      "evidence_url": "https://huggingface.co/datasets/SWE-bench/SWE-smith-trajectories",
+      "fetched_sample": "split=tool row keys = {messages(JSON conv str ~69KB), instance_id, resolved(bool), model, traj_id, patch}; license=mit, gated=false",
+      "data_field_map": {
+        "SWE-smith-trajectories(tool split parquet)": {"messages": "JSON-encoded list[{role,content}] -> step count derivable", "resolved": "bool (binary outcome, no typed failure mode)", "instance_id": "str", "model": "str", "traj_id": "str", "patch": "str (often empty in tool split)"},
+        "raw .traj (SWE-agent)": "{messages, info.exit_status?} -- exit_status often in separate run_batch_exit_statuses.yaml, NOT bundled in HF dataset",
+        "run_batch_exit_statuses.yaml": "{instance_id: exit_status} -- NOT part of SWE-smith-trajectories HF dataset"
+      }
+    },
+    "prior_art": {
+      "checked": true,
+      "replay_diff_vs_2509_02360": "2509.02360 (Course-Correcting-PRM) does offline PRM-score replay but NO censoring, NO typed CIF, scalar only -> hazardloop differentiates via typed competing-risk CIF + censoring-aware KM/NA; replay is consuming-face not headline",
+      "av_diff_vs_2512_03109": "2512.03109 (E-valuator) occupies anytime-valid sequential testing for BINARY correctness stopping; competing-risks/hazard/time-to-event explicitly out-of-scope there -> anytime-valid demoted to v0.2, will cite not reinvent",
+      "verdict": "moat uncontested: 'Aalen-Johansen CIF x LLM-agent trajectory' absent in web/arXiv (search returned only medical + general DKAJ 2512.08063, no agent). 2510.02712=single-event chatbot / 2511.00197=static manual annot / 2503.12374=python exception regex -> all distinct",
+      "evidence_url": "WebSearch 'survival analysis competing risks Aalen-Johansen LLM agent trajectory' -> medical/DKAJ only"
+    },
+    "claim_strawman_guard": {
+      "checked": true,
+      "metr_primary_confirmed": true,
+      "verdict": "metr.org primary confirms logistic-on-binary, NO survival/censoring/competing-risk handling. CLAIM '乖離しうる' is non-strawman. 'METR is wrong' assertion remains BANNED (R5)."
+    },
+    "name_available": {"checked": true, "pypi": "404 (free)", "github": "404 (free)"}
+  },
+  "measured": {
+    "km_curve_summary": null,
+    "cif_by_cause": null,
+    "logistic_vs_km_divergence": null,
+    "replay_metrics": null,
+    "bootstrap_ci": null,
+    "dataset": {"n": null, "mode": null, "source": null},
+    "results_path": null,
+    "gate_real_satisfied": false,
+    "reproduced_in_clean_clone": false,
+    "cif_mode": null,
+    "replay_threshold_selected_on": null,
+    "replay_evaluated_on": null
+  },
+  "honest_grep": {
+    "synthetic_no_disclaimer_negative_test_rc0": null,
+    "disclaimer_positive_test_pass": null,
+    "placeholder_grep_zero": null,
+    "hype_grep_zero": null,
+    "metr_assertion_grep_zero": null,
+    "fork_rescue_not_output": null
+  },
+  "critic": {"verdict": null, "rounds": 0, "blockers_open": [], "verdict_path": null, "github_state_audited": false},
+  "publish": {"name_checked": true, "repo_created": false, "branch_protected": false, "tagged": false, "released": false, "pypi": "deferred"},
+  "checklist": {"S0": true, "S0_5": true, "S1": false, "S2": false, "S3": false, "S4": false, "S5": false, "S6": false, "S7": false, "S8": false, "S9": false, "S10": false, "S11": false},
+  "status": "in_progress",
+  "next_action": "S1 IR/schema: StepRecord/SurvivalRecord/TerminationMode/ControlDecision/SurvivalReport normative; censoring->event_observed=0; failure-mode->cause index normalization machine-readable",
+  "blockers": [],
+  "wip_quarantine": [],
+  "retry_counts": {},
+  "circuit_breaker": {"max_attempts_per_step": 5, "critic_max_rounds": 3, "max_total_hours": 168},
+  "fallback_log": [],
+  "human_pause": {"paused": false, "reason": null, "since": null},
+  "pivot_history": [
+    {"from": "GATE-1 default [A] hope", "to": "[B] real-narrow", "reason": "SWE-smith-trajectories has only binary `resolved`, no typed failure mode label / no explicit censoring flag (live HF fetch confirmed FINALIZE prediction)", "evidence_url": "https://huggingface.co/datasets/SWE-bench/SWE-smith-trajectories", "timestamp": "2026-05-29"}
+  ]
+}
