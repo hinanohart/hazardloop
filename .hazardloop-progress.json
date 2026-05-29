@@ -3,8 +3,8 @@
   "product": "hazardloop",
   "repo_slug": "hinanohart/hazardloop",
   "protocol_version": "1.0",
-  "current_step": "S10",
-  "completed_steps": ["S0", "S0_5", "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9"],
+  "current_step": "S11",
+  "completed_steps": ["S0", "S0_5", "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10"],
   "step_attempts": 0,
   "session_lock": "b7cd08b9-continuation-2026-05-29",
   "decisions": {
@@ -95,8 +95,8 @@
     "fork_rescue_not_output": null
   },
   "critic": {"verdict": "SHIP-OK-WITH-NITS", "rounds": 1, "blockers_open": [], "verdict_path": "S8 3-agent (A architect FAITHFUL + B critic honesty all-PASS injection-verified); 2 nits fixed (README test-cluster precision 58/108 + bench regen). GitHub-state 7-item audit deferred to S11 (pre-publish)", "github_state_audited": false},
-  "publish": {"name_checked": true, "repo_created": false, "branch_protected": false, "tagged": false, "released": false, "pypi": "deferred"},
-  "checklist": {"S0": true, "S0_5": true, "S1": true, "S2": true, "S3": true, "S4": true, "S5": true, "S6": true, "S7": true, "S8": true, "S9": true, "S10": false, "S11": false},
+  "publish": {"name_checked": true, "repo_created": true, "branch_protected": true, "tagged": true, "released": true, "pypi": "deferred", "url": "https://github.com/hinanohart/hazardloop", "ci_all_matrix_green": true},
+  "checklist": {"S0": true, "S0_5": true, "S1": true, "S2": true, "S3": true, "S4": true, "S5": true, "S6": true, "S7": true, "S8": true, "S9": true, "S10": true, "S11": false},
   "status": "in_progress",
   "next_action": "MONITOR PANEL (user-mandated 2 monitors + 1 meta on S0-S5 faithfulness/anti-theater/compact-comprehension) THEN S6 REAL metric: gate-real real-log KM/NA (swe-smith) env-stamped bench_results json + synthetic typed CIF (cif_mode=synthetic -> BP1 disclaimer) + logistic-vs-KM divergence (non-CLAIM); write file before datasets teardown segfault, verify by file",
   "blockers": [],
