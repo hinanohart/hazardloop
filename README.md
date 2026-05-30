@@ -9,7 +9,7 @@ as an observed failure) and **competing risks** (a wrong patch, a tool error, an
 loop, and a budget exhaustion are different terminal events, not one). hazardloop brings
 Kaplan-Meier, Nelson-Aalen, the **Aalen-Johansen competing-risk cumulative incidence
 function**, and Weibull AFT to agent trajectories — implemented from scratch on numpy,
-Apache-2.0 clean, CPU-only, no GPU.
+MIT clean, CPU-only, no GPU.
 
 > **Status: 0.1.0a3 (pre-alpha).** hazardloop is an *estimator plus a fail-closed policy
 > interface*; it is **not a trained controller**. Any benefit to a live agent is
@@ -124,6 +124,6 @@ The `fork` decision's rescue rate is unobserved and is **not reported**.
 
 ## License
 
-Apache-2.0. See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE). The GPL survival package named
+MIT. See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE). The GPL survival package named
 in NOTICE is **not** a dependency and is excluded by a CI check; KM / Nelson-Aalen /
 Aalen-Johansen / Weibull-AFT are re-implemented on numpy.

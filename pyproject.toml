@@ -8,7 +8,7 @@ version = "0.1.0a3"
 description = "Censoring-aware competing-risk survival analysis for long-horizon LLM-agent trajectories (Kaplan-Meier / Nelson-Aalen / Aalen-Johansen CIF / Weibull AFT) with offline-replay decision-quality evaluation. CPU-only, no GPU."
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "Apache-2.0" }
+license = { text = "MIT" }
 authors = [{ name = "hinanohart" }]
 keywords = [
   "survival-analysis",
@@ -22,7 +22,7 @@ keywords = [
 classifiers = [
   "Development Status :: 2 - Pre-Alpha",
   "Intended Audience :: Science/Research",
-  "License :: OSI Approved :: Apache Software License",
+  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Topic :: Scientific/Engineering :: Mathematics",
@@ -65,7 +65,7 @@ hazardloop = "hazardloop.cli:app"
 packages = ["src/hazardloop"]
 
 [tool.hatch.build.targets.sdist]
-include = ["src/hazardloop", "tests", "scripts", "docs", "LICENSE", "NOTICE", "README.md", "CHANGELOG.md"]
+include = ["src/hazardloop", "tests", "scripts", "docs", "LICENSE", "README.md", "CHANGELOG.md"]
 
 [tool.ruff]
 line-length = 100
